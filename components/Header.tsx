@@ -42,7 +42,7 @@ export default function Header() {
           </Link>
 
           <Link
-            href="/livros"
+            href="/"
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
               ${pathname === "/livros" ? "text-white bg-zinc-800" : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900"}`}
           >

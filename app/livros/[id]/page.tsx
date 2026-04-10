@@ -1,7 +1,14 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Save, ChevronLeft, Loader2, BookOpen, Trash } from "lucide-react";
+import {
+  Save,
+  ChevronLeft,
+  Loader2,
+  BookOpen,
+  Trash,
+  Star,
+} from "lucide-react";
 import { deleteDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { updateDoc } from "firebase/firestore";
@@ -39,6 +46,7 @@ export default function EditPage() {
     });
 
     alert("Livro atualizado com sucesso!");
+    router.push("/");
   }
 
   // Use effect que recebe o ID do produto clicado na página principal e procura os dados dele no banco de dados
@@ -58,7 +66,6 @@ export default function EditPage() {
       setLoading(false);
     }
     buscarLivroAtual();
-    
   }, [id]);
 
   async function apagarLivro(id: string) {
@@ -123,18 +130,21 @@ export default function EditPage() {
           <div className="h-1 w-20 bg-indigo-600 rounded-full"></div>
         </header>
 
-        {/* Área de Escrita "Clean" */}
+        {/* Informações do livro*/}
         <section className="space-y-8">
-
           <div className="flex flex-col md:flex-row gap-6 p-6 rounded-2xl bg-zinc-900/30 border border-zinc-800/50">
             <div className="flex-1 space-y-2">
               <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
                 Status
               </label>
-              <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-transparent text-xl font-medium outline-none cursor-pointer hover:text-indigo-400 transition-colors">
-                <option className="bg-zinc-900">Lendo</option>
-                <option className="bg-zinc-900">Finalizado</option>
-                <option className="bg-zinc-900">Quero Ler</option>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full bg-transparent text-xl font-medium outline-none cursor-pointer hover:text-indigo-400 transition-colors"
+              >
+                <option className="bg-zinc-900">Em andamento</option>
+                <option className="bg-zinc-900">Concluido</option>
+                <option className="bg-zinc-900">Não iniciado</option>
               </select>
             </div>
             <div className="flex-1 space-y-2 border-t md:border-t-0 md:border-l border-zinc-800 pt-4 md:pt-0 md:pl-6">
@@ -147,6 +157,21 @@ export default function EditPage() {
                 onChange={(e) => setDataInicio(e.target.value)}
                 className="w-full bg-transparent text-xl font-medium outline-none block"
               />
+            </div>
+            <div className="flex-1 flex-col items-center space-y-2 md:border-l border-zinc-800 md:pl-6">
+              <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">
+                Nota
+              </label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((estrela) => (
+                  <Star
+                    key={estrela}
+                    size={16}
+                    className={`cursor-pointer transition-colors ${estrela <= nota ? "fill-yellow-400 text-yellow-400" : "text-zinc-600"}`}
+                    onClick={() => setNota(estrela)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 

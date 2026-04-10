@@ -12,7 +12,6 @@ export default function CardItem({
   rating,
   status,
 }: any) {
-  
   // Estado para controlar o hover na borda (efeito de brilho)
   const [isHovered, setIsHovered] = useState(false);
 
@@ -30,11 +29,11 @@ export default function CardItem({
   };
 
   function corStatus(status: string) {
-    if (status === "Lendo") {
+    if (status === "Em andamento") {
       return "bg-yellow-500";
-    } else if (status === "Finalizado") {
+    } else if (status === "Concluido") {
       return "bg-green-500";
-    } else if (status === "Quero Ler") {
+    } else if (status === "Não iniciado") {
       return "bg-slate-500";
     }
   }
@@ -54,7 +53,11 @@ export default function CardItem({
           loading="lazy"
         />
 
-        <div className={`absolute text-sm font-bold text-white top-2 left-2 z-10 p-4 py-1 ${corStatus(status)} rounded-full`}>{status}</div>
+        <div
+          className={`absolute text-sm font-bold text-white top-2 left-2 z-10 p-4 py-1 ${corStatus(status)} rounded-full`}
+        >
+          {status}
+        </div>
 
         {/* Camada de sobreposição sutil*/}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -77,10 +80,7 @@ export default function CardItem({
           </div>
 
           <div className="flex items-center justify-between gap-3 just">
-              <div className="flex gap-3">
-                {renderStars(rating)}
-              </div>
-              {/* <Trash className="z-50" onClick={(e) => {e.stopPropagation();e.preventDefault; apagarLivro(Id)}} size={20} /> */}
+            <div className="flex gap-3">{renderStars(rating)}</div>
           </div>
         </div>
       </div>
