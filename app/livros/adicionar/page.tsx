@@ -100,7 +100,6 @@ export default function AdicionarPage() {
           {resultados.map((livro) => (
             <div
               key={livro.id}
-              onClick={() => adicionarLivro(livro)}
               className="group flex flex-col gap-3 rounded-2xl border border-zinc-800 hover:border-indigo-500/50 bg-zinc-900 p-4 cursor-pointer transition-all hover:scale-[1.02]"
             >
               <img
@@ -111,7 +110,7 @@ export default function AdicionarPage() {
               <p className="text-sm font-semibold text-white line-clamp-2 group-hover:text-indigo-400 transition-colors">
                 {livro.titulo}
               </p>
-              <button className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-indigo-600 text-zinc-400 hover:text-white text-xs font-semibold py-2 rounded-lg transition-all">
+              <button onClick={()=> adicionarLivro(livro)} className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-indigo-600 text-zinc-400 hover:text-white text-xs font-semibold py-2 rounded-lg transition-all">
                 <Plus size={14} />
                 Adicionar
               </button>

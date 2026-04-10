@@ -100,7 +100,6 @@ export default function AdicionarPage() {
           {resultados.map((serie) => (
             <div
               key={serie.id}
-              onClick={() => adicionarSerie(serie)}
               className="group flex flex-col gap-3 rounded-2xl border border-zinc-800 hover:border-indigo-500/50 bg-zinc-900 p-4 cursor-pointer transition-all hover:scale-[1.02]"
             >
               <img
