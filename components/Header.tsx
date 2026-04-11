@@ -3,13 +3,14 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Film, Tv, BookOpen, Search, User } from "lucide-react";
+import { Film, Tv, BookOpen, Search, User, Menu, X } from "lucide-react";
 
 export default function Header() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-black/80 backdrop-blur-md">
+    <header className="sticky top-0 w-full border-b border-zinc-800 bg-black/80 backdrop-blur-md z-100">
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
         {/* Lado Esquerdo: Logo */}
         <Link href="/" className="flex items-center gap-2 group">
@@ -57,14 +58,50 @@ export default function Header() {
             <Search size={20} />
           </button>
 
-          <div className="h-9 w-9 rounded-full border-2 border-indigo-500/30 overflow-hidden cursor-pointer hover:border-indigo-500 transition-colors">
+          <div className="h-9 w-9 rounded-full">
             {/* Placeholder para imagem de perfil ou iniciais */}
-            <div className="h-full w-full bg-zinc-800 flex items-center justify-center text-xs font-bold text-indigo-400">
-              BR
-            </div>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="flex md:hidden  h-full w-full items-center justify-center text-xs font-bold text-indigo-400"
+            >
+              <Menu size={24} />
+            </button>
           </div>
         </div>
       </div>
+
+      {isOpen && (
+        <div className="fixed inset-0 h-screen w-screen bg-black z-100 items-center flex justify-center">
+          <button
+            onClick={() => setIsOpen(false)}
+            className="absolute top-6 right-6 p-2 text-white rounded-full"
+          >
+            <X size={24} />
+          </button>
+          <div className="flex flex-col gap-10 mt-12 font-bold text-xl">
+            <Link
+              href="/filmes"
+              className={
+                "flex items-center px-4 rounded-lg font-medium transition-colors text-white"
+              }
+            >
+              Filmes
+            </Link>
+
+            <Link
+              href="/series"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors
+              ${pathname === "/series" ? "text-white bg-zinc-800" : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900"}`}
+            >Series</Link>
+
+            <Link
+              href="/livros"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors
+              ${pathname === "/livros" ? "text-white bg-zinc-800" : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900"}`}
+            >Livros</Link>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

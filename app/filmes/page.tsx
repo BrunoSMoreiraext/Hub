@@ -64,7 +64,7 @@ export default function Home() {
     <>
       <Header />
       <div className="p-8 flex flex-col">
-        <h1 className="text-3xl font-bold mb-8 text-white">Filmes assistidas</h1>
+        <h1 className="text-3xl font-bold mb-8 text-white">Filmes assistidos</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {filmes.map((filmes) => (
             <Link key={filmes.id} href={`/filmes/${filmes.id}`}>
