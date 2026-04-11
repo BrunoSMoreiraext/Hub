@@ -26,7 +26,16 @@ export default function Home() {
 
   // Função que busca os livros no firebase e salva eles no useState Livros
   async function buscarLivros() {
-    // Busca todos os documentos da coleção "livros" no Firestore
+
+    // verificamos se n tem livros salvos em cache, se tiver passamos para o useState livros direto, sem ir para o db
+    const cache = localStorage.getItem("livros");
+    if (cache) {
+      setLivros(JSON.parse(cache));
+      setLoading(false);
+      return;
+    }
+
+    // Se não tem cache busca todos os documentos da coleção "livros" no Firestore
     const colecaoLivros = await getDocs(collection(db, "livros"));
 
     // Transforma cada documento em um objeto com id + campos do banco
@@ -44,6 +53,8 @@ export default function Home() {
 
       return 0;
     });
+
+    localStorage.setItem("livros", JSON.stringify(dados));
 
     setLivros(dados);
     setLoading(false);

@@ -53,6 +53,7 @@ export default function AdicionarPage() {
       })
 
       alert("Livro adicionado com sucesso!");
+      localStorage.removeItem("livros");
       router.push("/");
   }
   return( 

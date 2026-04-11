@@ -46,6 +46,7 @@ export default function EditPage() {
     });
 
     alert("Livro atualizado com sucesso!");
+    localStorage.removeItem("livros");
     router.push("/");
   }
 
@@ -71,6 +72,7 @@ export default function EditPage() {
   async function apagarLivro(id: string) {
     const referencia = doc(db, "livros", id); // Pegando o elemento que cliquei e que quero apagar
     await deleteDoc(referencia);
+    localStorage.removeItem("livros");
     router.back();
   }
 

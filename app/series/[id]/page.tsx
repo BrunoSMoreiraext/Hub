@@ -8,6 +8,7 @@ import {
   BookOpen,
   Trash,
   Star,
+  TvMinimalPlay,
 } from "lucide-react";
 import { deleteDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -46,6 +47,7 @@ export default function EditPage() {
     });
 
     alert("Serie atualizada com sucesso!");
+    localStorage.removeItem("series");
     router.push("/series");
   }
 
@@ -71,6 +73,7 @@ export default function EditPage() {
   async function apagarSerie(id: string) {
     const referencia = doc(db, "series", id); // Pegando o elemento que cliquei e que quero apagar
     await deleteDoc(referencia);
+    localStorage.removeItem("series");
     router.back();
   }
 
@@ -119,9 +122,9 @@ export default function EditPage() {
         {/* Título e Meta-informações */}
         <header className="mb-12">
           <div className="flex items-center gap-3 text-indigo-500 mb-2">
-            <BookOpen size={20} />
+            <TvMinimalPlay size={20} />
             <span className="text-xs uppercase tracking-[0.2em] font-bold">
-              Livro
+              Séries
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-4">

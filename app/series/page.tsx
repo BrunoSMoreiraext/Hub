@@ -26,6 +26,15 @@ export default function Home() {
 
   // Função que busca os livros no firebase e salva eles no useState Livros
   async function buscarSeries() {
+
+    // Verificando se n tem series em cache
+    const cache = localStorage.getItem("series");
+    if (cache) {
+      setSeries(JSON.parse(cache));
+      setLoading(false);
+      return;
+    }
+
     // Busca todos os documentos da coleção "livros" no Firestore
     const colecaoSeries = await getDocs(collection(db, "series"));
 
@@ -44,6 +53,8 @@ export default function Home() {
 
       return 0;
     });
+
+    localStorage.setItem("series", JSON.stringify(dados));
 
     setSeries(dados);
     setLoading(false);
@@ -64,7 +75,7 @@ export default function Home() {
     <>
       <Header />
       <div className="p-8 flex flex-col">
-        <h1 className="text-3xl font-bold mb-8 text-white">Series Assistidas</h1>
+        <h1 className="text-3xl font-bold mb-8 text-white">Minhas séries</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {series.map((series) => (
             <Link key={series.id} href={`/series/${series.id}`}>

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Star, Calendar, Pencil, ExternalLink, Trash } from "lucide-react";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import Image from "next/image";
 
 export default function CardItem({
   title,
@@ -44,11 +45,12 @@ export default function CardItem({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Container da Imagem (Proporção de Poster/Livro) */}
+      {/* Container da Imagem */}
       <div className="relative aspect-[2/3] overflow-hidden rounded-xl">
-        <img
+        <Image
           src={imageUrl}
           alt={title}
+          fill
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />

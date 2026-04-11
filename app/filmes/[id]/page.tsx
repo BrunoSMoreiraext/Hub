@@ -8,6 +8,7 @@ import {
   BookOpen,
   Trash,
   Star,
+  Film,
 } from "lucide-react";
 import { deleteDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -46,6 +47,7 @@ export default function EditPage() {
     });
 
     alert("Filme atualizado com sucesso!");
+    localStorage.removeItem("filmes");
     router.push("/filmes");
   }
 
@@ -71,6 +73,7 @@ export default function EditPage() {
   async function apagarFilme(id: string) {
     const referencia = doc(db, "filmes", id); // Pegando o elemento que cliquei e que quero apagar
     await deleteDoc(referencia);
+    localStorage.removeItem("filmes");
     router.back();
   }
 
@@ -119,7 +122,7 @@ export default function EditPage() {
         {/* Título e Meta-informações */}
         <header className="mb-12">
           <div className="flex items-center gap-3 text-indigo-500 mb-2">
-            <BookOpen size={20} />
+            <Film size={20} />
             <span className="text-xs uppercase tracking-[0.2em] font-bold">
               Filme
             </span>
@@ -130,7 +133,7 @@ export default function EditPage() {
           <div className="h-1 w-20 bg-indigo-600 rounded-full"></div>
         </header>
 
-        {/* Informações do livro*/}
+        {/* Informações do filme*/}
         <section className="space-y-8">
           <div className="flex flex-col md:flex-row gap-6 p-6 rounded-2xl bg-zinc-900/30 border border-zinc-800/50">
             <div className="flex-1 space-y-2">

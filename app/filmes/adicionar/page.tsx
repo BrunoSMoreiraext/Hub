@@ -54,6 +54,7 @@ export default function AdicionarPage() {
     });
 
     alert("Filme adicionado com sucesso!");
+    localStorage.removeItem("filmes");
     router.push("/filmes");
   }
   return (

@@ -26,6 +26,16 @@ export default function Home() {
 
   // Função que busca os livros no firebase e salva eles no useState Livros
   async function buscarFilmes() {
+
+    // Verifica se tem filmes em cache
+
+    const cache = localStorage.getItem("filmes");
+    if (cache) {
+      setFilmes(JSON.parse(cache));
+      setLoading(false);
+      return;
+    }
+
     // Busca todos os documentos da coleção "livros" no Firestore
     const colecaoFilmes = await getDocs(collection(db, "filmes"));
 
@@ -44,6 +54,8 @@ export default function Home() {
 
       return 0;
     });
+
+    localStorage.setItem("filmes", JSON.stringify(dados));
 
     setFilmes(dados);
     setLoading(false);
@@ -64,7 +76,7 @@ export default function Home() {
     <>
       <Header />
       <div className="p-8 flex flex-col">
-        <h1 className="text-3xl font-bold mb-8 text-white">Filmes assistidos</h1>
+        <h1 className="text-3xl font-bold mb-8 text-white">Absolute cinema</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {filmes.map((filmes) => (
             <Link key={filmes.id} href={`/filmes/${filmes.id}`}>
