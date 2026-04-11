@@ -45,7 +45,7 @@ export default function EditPage() {
       status: status,
     });
 
-    alert("Livro atualizado com sucesso!");
+    alert("Serie atualizada com sucesso!");
     router.push("/series");
   }
 
