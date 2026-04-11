@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "BrunoHub",
   description: "Minha biblioteca pessoal de livros, filmes e séries",
   manifest: "/manifest.json",
+  themeColor: "#09090b",
 };
 
 export default function RootLayout({
