@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <div className="p-8 max-w-6xl mx-auto">
+      <div className="p-8 mb-15 max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold mb-12 text-white">Bem-vindo ao Hub</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
