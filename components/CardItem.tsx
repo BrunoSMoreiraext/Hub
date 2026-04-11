@@ -13,8 +13,6 @@ export default function CardItem({
   rating,
   status,
 }: any) {
-  // Estado para controlar o hover na borda (efeito de brilho)
-  const [isHovered, setIsHovered] = useState(false);
 
   // Função para renderizar as estrelas baseadas na nota
   const renderStars = (rating: number) => {
@@ -41,9 +39,7 @@ export default function CardItem({
 
   return (
     <div
-      className={`group relative flex flex-col gap-3 rounded-2xl border ${isHovered ? "border-indigo-500/50" : "border-zinc-800"} bg-zinc-900 p-4 transition-all duration-300 hover:scale-[1.02] cursor-pointer`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="group mb-15 relative flex flex-col gap-3 rounded-2xl border border-zinc-800 hover:border-indigo-500/50 bg-zinc-900 p-4 transition-all duration-300 hover:scale-[1.02] cursor-pointer"
     >
       {/* Container da Imagem */}
       <div className="relative aspect-[2/3] overflow-hidden rounded-xl">
@@ -89,7 +85,7 @@ export default function CardItem({
 
       {/* Efeito de brilho sutil no hover */}
       <div
-        className={`absolute inset-0 -z-10 rounded-2xl bg-indigo-500/0 blur-2xl transition-all duration-300 ${isHovered ? "bg-indigo-500/5" : ""}`}
+        className="absolute inset-0 -z-10 rounded-2xl bg-indigo-500/0 hover:bg-indigo-500/5 blur-2xl transition-all duration-300"
       />
     </div>
   );

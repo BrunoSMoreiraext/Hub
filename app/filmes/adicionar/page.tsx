@@ -72,7 +72,7 @@ export default function AdicionarPage() {
         <h1 className="text-3xl font-bold mb-8 text-white">Adicionar Filme</h1>
 
         {/* Campo de busca */}
-        <div className="flex gap-3 mb-8">
+        <div className="flex flex-col md:flex-row gap-3 mb-8">
           <input
             type="text"
             value={busca}
@@ -83,7 +83,7 @@ export default function AdicionarPage() {
           />
           <button
             onClick={buscarFilmes}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-5 py-3 rounded-xl font-semibold text-sm transition-all"
+            className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-5 py-3 rounded-xl font-semibold text-sm transition-all"
           >
             <Search size={18} />
             Buscar
@@ -96,7 +96,7 @@ export default function AdicionarPage() {
         )}
 
         {/* Resultados */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {resultados.map((filme) => (
             <div
               key={filme.id}
