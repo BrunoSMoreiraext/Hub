@@ -13,7 +13,6 @@ export default function CardItem({
   rating,
   status,
 }: any) {
-
   // Função para renderizar as estrelas baseadas na nota
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, index) => (
@@ -38,9 +37,7 @@ export default function CardItem({
   }
 
   return (
-    <div
-      className="group mb-15 relative flex flex-col gap-3 rounded-2xl border border-zinc-800 hover:border-indigo-500/50 bg-zinc-900 p-4 transition-all duration-300 hover:scale-[1.02] cursor-pointer"
-    >
+    <div className="group mb-15 relative flex flex-col gap-3 rounded-2xl border border-zinc-800 hover:border-amber-500/50 bg-zinc-900 p-4 transition-all duration-300 hover:scale-[1.02] cursor-pointer">
       {/* Container da Imagem */}
       <div className="relative aspect-[2/3] overflow-hidden rounded-xl">
         <Image
@@ -63,7 +60,7 @@ export default function CardItem({
 
       {/* Informações da Obra */}
       <div className="flex flex-col gap-2.5">
-        <h3 className="line-clamp-1 text-lg font-semibold tracking-tight text-white group-hover:text-indigo-400 transition-colors">
+        <h3 className="line-clamp-1 text-lg font-semibold tracking-tight text-white group-hover:text-amber-400 transition-colors">
           {title}
         </h3>
 
@@ -84,9 +81,7 @@ export default function CardItem({
       </div>
 
       {/* Efeito de brilho sutil no hover */}
-      <div
-        className="absolute inset-0 -z-10 rounded-2xl bg-indigo-500/0 hover:bg-indigo-500/5 blur-2xl transition-all duration-300"
-      />
+      <div className="absolute inset-0 -z-10 rounded-2xl bg-amber-500/0 hover:bg-amber-500/5 blur-2xl transition-all duration-300" />
     </div>
   );
 }

@@ -26,7 +26,6 @@ export default function Home() {
 
   // Função que busca os livros no firebase e salva eles no useState Livros
   async function buscarFilmes() {
-
     // Verifica se tem filmes em cache
 
     const cache = localStorage.getItem("filmes");
@@ -45,12 +44,12 @@ export default function Home() {
       ...doc.data(), // Os campos: titulo, nota, dataInicio, resumo, apiId
     })) as Filmes[];
 
-    dados.sort((a,b)=>{
-      if(a.status === "Em andamento") return -1;
-      if(b.status === "Em andamento") return 1;
+    dados.sort((a, b) => {
+      if (a.status === "Em andamento") return -1;
+      if (b.status === "Em andamento") return 1;
 
-      if(a.status === "Concluido") return -1;
-      if(b.status === "Concluido") return 1;
+      if (a.status === "Concluido") return -1;
+      if (b.status === "Concluido") return 1;
 
       return 0;
     });
@@ -84,17 +83,17 @@ export default function Home() {
                 key={filmes.id}
                 title={filmes.titulo}
                 imageUrl={filmes.imagem}
-                startDate={filmes.dataInicio} 
+                startDate={filmes.dataInicio}
                 rating={filmes.nota}
                 type="filmes"
-                status = {filmes.status}
+                status={filmes.status}
               />
             </Link>
           ))}
         </div>
         <button
-          onClick={() => router.push("filmes/adicionar")} 
-          className="z-50 fixed bottom-8 right-8 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-6 py-4 rounded-2xl font-semibold text-sm transition-all shadow-lg shadow-indigo-500/20 active:scale-95"
+          onClick={() => router.push("filmes/adicionar")}
+          className="z-50 fixed bottom-8 right-8 flex items-center gap-2 bg-amber-500 hover:bg-amber-600 px-6 py-4 rounded-2xl font-semibold text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95"
         >
           <span className="text-xl">+</span>
         </button>

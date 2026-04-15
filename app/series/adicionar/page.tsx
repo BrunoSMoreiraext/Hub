@@ -28,14 +28,13 @@ export default function AdicionarPage() {
       `https://api.themoviedb.org/3/search/tv?query=${encodeURIComponent(busca)}&api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=pt-BR`,
     );
     const dadosAPI = await respostaAPI.json();
-    
 
     const series = dadosAPI.results.map((item: any) => ({
       id: item.id,
       titulo: item.name,
       imagem: item.poster_path
-          ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-          : "https://placehold.co/300x450",
+        ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+        : "https://placehold.co/300x450",
     }));
     setResultados(series);
     setCarregando(false);
@@ -80,11 +79,11 @@ export default function AdicionarPage() {
             onChange={(e) => setBusca(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && buscarSeries()}
             placeholder="Digite o nome da serie..."
-            className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 outline-none focus:border-indigo-500 transition-colors"
+            className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 outline-none focus:border-amber-500 transition-colors"
           />
           <button
             onClick={buscarSeries}
-            className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-5 py-3 rounded-xl font-semibold text-sm transition-all"
+            className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 px-5 py-3 rounded-xl font-semibold text-sm transition-all"
           >
             <Search size={18} />
             Buscar
@@ -101,17 +100,20 @@ export default function AdicionarPage() {
           {resultados.map((serie) => (
             <div
               key={serie.id}
-              className="group flex flex-col gap-3 rounded-2xl border border-zinc-800 hover:border-indigo-500/50 bg-zinc-900 p-4 cursor-pointer transition-all hover:scale-[1.02]"
+              className="group flex flex-col gap-3 rounded-2xl border border-zinc-800 hover:border-amber-500/50 bg-zinc-900 p-4 cursor-pointer transition-all hover:scale-[1.02]"
             >
               <img
                 src={serie.imagem}
                 alt={serie.titulo}
                 className="w-full aspect-[2/3] object-cover rounded-xl"
               />
-              <p className="text-sm font-semibold text-white line-clamp-2 group-hover:text-indigo-400 transition-colors">
+              <p className="text-sm font-semibold text-white line-clamp-2 group-hover:text-amber-400 transition-colors">
                 {serie.titulo}
               </p>
-              <button onClick ={() => adicionarSerie(serie)} className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-indigo-600 text-zinc-400 hover:text-white text-xs font-semibold py-2 rounded-lg transition-all">
+              <button
+                onClick={() => adicionarSerie(serie)}
+                className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-amber-600 text-zinc-400 hover:text-white text-xs font-semibold py-2 rounded-lg transition-all"
+              >
                 <Plus size={14} />
                 Adicionar
               </button>

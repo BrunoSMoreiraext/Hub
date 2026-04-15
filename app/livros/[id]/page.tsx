@@ -79,7 +79,7 @@ export default function EditPage() {
   if (loading)
     return (
       <div className="h-screen bg-zinc-950 flex items-center justify-center">
-        <Loader2 className="animate-spin text-indigo-500" />
+        <Loader2 className="animate-spin text-amber-500" />
       </div>
     );
 
@@ -103,7 +103,7 @@ export default function EditPage() {
           <div className="flex gap-3">
             <button
               onClick={updateNovasInformacoes}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-5 py-2 rounded-full font-semibold text-sm transition-all shadow-lg shadow-indigo-500/20 active:scale-95"
+              className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 px-5 py-2 rounded-full font-semibold text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95"
             >
               <Save size={18} />
               <span>Salvar</span>
@@ -120,7 +120,7 @@ export default function EditPage() {
 
         {/* Título e Meta-informações */}
         <header className="mb-12">
-          <div className="flex items-center gap-3 text-indigo-500 mb-2">
+          <div className="flex items-center gap-3 text-amber-500 mb-2">
             <BookOpen size={20} />
             <span className="text-xs uppercase tracking-[0.2em] font-bold">
               Livro
@@ -129,7 +129,7 @@ export default function EditPage() {
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-4">
             {titulo}
           </h1>
-          <div className="h-1 w-20 bg-indigo-600 rounded-full"></div>
+          <div className="h-1 w-20 bg-amber-500 rounded-full"></div>
         </header>
 
         {/* Informações do livro*/}
@@ -142,7 +142,7 @@ export default function EditPage() {
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full bg-transparent text-xl font-medium outline-none cursor-pointer hover:text-indigo-400 transition-colors"
+                className="w-full bg-transparent text-xl font-medium outline-none cursor-pointer hover:text-amber-400 transition-colors"
               >
                 <option className="bg-zinc-900">Em andamento</option>
                 <option className="bg-zinc-900">Concluido</option>

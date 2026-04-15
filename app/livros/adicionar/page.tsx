@@ -43,25 +43,23 @@ export default function AdicionarPage() {
   // Função para adicionar livros ao banco de dados
 
   async function adicionarLivro(livro: LivroAPI) {
-      await addDoc(collection(db, "livros"), {
-          apiId: livro.id,
-          titulo: livro.titulo,
-          resumo: "",
-          dataInicio: "",
-          nota: 0,
-          status: "Não iniciado"
-      })
+    await addDoc(collection(db, "livros"), {
+      apiId: livro.id,
+      titulo: livro.titulo,
+      resumo: "",
+      dataInicio: "",
+      nota: 0,
+      status: "Não iniciado",
+    });
 
-      alert("Livro adicionado com sucesso!");
-      localStorage.removeItem("livros");
-      router.push("/");
+    alert("Livro adicionado com sucesso!");
+    localStorage.removeItem("livros");
+    router.push("/");
   }
-  return( 
-  
-  <>
-    <Header />
+  return (
+    <>
+      <Header />
       <div className="p-8 max-w-4xl mx-auto">
-
         {/* Botão voltar e título */}
         <button
           onClick={() => router.back()}
@@ -80,11 +78,11 @@ export default function AdicionarPage() {
             onChange={(e) => setBusca(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && buscarLivros()}
             placeholder="Digite o nome do livro..."
-            className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 outline-none focus:border-indigo-500 transition-colors"
+            className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 outline-none focus:border-amber-500 transition-colors"
           />
           <button
             onClick={buscarLivros}
-            className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-5 py-3 rounded-xl font-semibold text-sm transition-all"
+            className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 px-5 py-3 rounded-xl font-semibold text-sm transition-all"
           >
             <Search size={18} />
             Buscar
@@ -101,25 +99,27 @@ export default function AdicionarPage() {
           {resultados.map((livro) => (
             <div
               key={livro.id}
-              className="group flex flex-col gap-3 rounded-2xl border border-zinc-800 hover:border-indigo-500/50 bg-zinc-900 p-4 cursor-pointer transition-all hover:scale-[1.02]"
+              className="group flex flex-col gap-3 rounded-2xl border border-zinc-800 hover:border-amber-500/50 bg-zinc-900 p-4 cursor-pointer transition-all hover:scale-[1.02]"
             >
               <img
                 src={livro.imagem}
                 alt={livro.titulo}
                 className="w-full aspect-[2/3] object-cover rounded-xl"
               />
-              <p className="text-sm font-semibold text-white line-clamp-2 group-hover:text-indigo-400 transition-colors">
+              <p className="text-sm font-semibold text-white line-clamp-2 group-hover:text-amber-400 transition-colors">
                 {livro.titulo}
               </p>
-              <button onClick={()=> adicionarLivro(livro)} className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-indigo-600 text-zinc-400 hover:text-white text-xs font-semibold py-2 rounded-lg transition-all">
+              <button
+                onClick={() => adicionarLivro(livro)}
+                className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-amber-600 text-zinc-400 hover:text-white text-xs font-semibold py-2 rounded-lg transition-all"
+              >
                 <Plus size={14} />
                 Adicionar
               </button>
             </div>
           ))}
         </div>
-
       </div>
-  </>
+    </>
   );
 }

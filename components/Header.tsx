@@ -14,11 +14,11 @@ export default function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
         {/* Lado Esquerdo: Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="h-9 w-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white transition-transform group-hover:scale-105">
+          <div className="h-9 w-9 rounded-xl bg-amber-500 flex items-center justify-center font-bold text-white transition-transform group-hover:scale-105">
             B
           </div>
           <span className="text-xl font-bold tracking-tight text-white">
-            Bruno<span className="text-indigo-500">Hub</span>
+            Bruno<span className="text-amber-500">Hub</span>
           </span>
         </Link>
 
@@ -62,7 +62,7 @@ export default function Header() {
             {/* Placeholder para imagem de perfil ou iniciais */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex md:hidden  h-full w-full items-center justify-center text-xs font-bold text-indigo-400"
+              className="flex md:hidden  h-full w-full items-center justify-center text-xs font-bold text-amber-400"
             >
               <Menu size={24} />
             </button>
@@ -92,13 +92,17 @@ export default function Header() {
               href="/series"
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors
               ${pathname === "/series" ? "text-white bg-zinc-800" : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900"}`}
-            >Series</Link>
+            >
+              Series
+            </Link>
 
             <Link
               href="/livros"
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors
               ${pathname === "/livros" ? "text-white bg-zinc-800" : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900"}`}
-            >Livros</Link>
+            >
+              Livros
+            </Link>
           </div>
         </div>
       )}
