@@ -17,27 +17,44 @@ export default function AdicionarPage() {
   const [busca, setBusca] = useState("");
   const [carregando, setCarregando] = useState(false);
   const [resultados, setResultados] = useState<LivroAPI[]>([]);
+  const [erro, setErro] = useState("");
   const router = useRouter();
 
-  // Função que busca os livros na API e salva eles no useState
+  // Função que busca os livros no endpoint e salva eles no useState
   async function buscarLivros() {
     if (!busca.trim()) return;
+
+    setErro("");
     setCarregando(true);
 
-    const respostaAPI = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(busca)}&maxResults=12&langRestrict=pt`,
-    );
-    const dadosAPI = await respostaAPI.json();
+    // Acessamos o route.ts, ele busca os dados na url e trás de volta
+    try {
+      const resposta = await fetch(`/api/books?q=${encodeURIComponent(busca)}`);
+      const dados = await resposta.json();
 
-    const livros = dadosAPI.items.map((item: any) => ({
-      id: item.id,
-      titulo: item.volumeInfo.title,
-      imagem:
-        item.volumeInfo.imageLinks?.thumbnail ??
-        "https://via.placeholder.com/150",
-    }));
-    setResultados(livros);
-    setCarregando(false);
+      if (!resposta.ok) {
+        setErro(dados.erro ?? "Não foi possível buscar os livros.");
+        setResultados([]);
+        return;
+      }
+
+      const livros = (dados.items ?? []).map((item: any) => ({
+        id: item.id,
+        titulo: item.volumeInfo.title,
+        imagem:
+          item.volumeInfo.imageLinks?.thumbnail?.replace(
+            "http://",
+            "https://",
+          ) ?? "https://placehold.co/300x450",
+      }));
+
+      setResultados(livros);
+    } catch {
+      setErro("Falha de conexão. Verifique sua internet e tente novamente.");
+      setResultados([]);
+    } finally {
+      setCarregando(false);
+    }
   }
 
   // Função para adicionar livros ao banco de dados
@@ -82,7 +99,8 @@ export default function AdicionarPage() {
           />
           <button
             onClick={buscarLivros}
-            className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 px-5 py-3 rounded-xl font-semibold text-sm transition-all"
+            disabled={carregando}
+            className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 px-5 py-3 rounded-xl font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Search size={18} />
             Buscar
@@ -92,6 +110,13 @@ export default function AdicionarPage() {
         {/* Estado de carregando */}
         {carregando && (
           <p className="text-zinc-500 text-center">Buscando livros...</p>
+        )}
+
+        {/* Mensagem de erro */}
+        {erro && (
+          <p className="text-red-400 text-center mb-6" role="alert">
+            {erro}
+          </p>
         )}
 
         {/* Resultados */}

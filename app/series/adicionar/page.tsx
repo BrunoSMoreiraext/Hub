@@ -17,27 +17,41 @@ export default function AdicionarPage() {
   const [busca, setBusca] = useState("");
   const [carregando, setCarregando] = useState(false);
   const [resultados, setResultados] = useState<SeriesAPI[]>([]);
+  const [erro, setErro] = useState("");
   const router = useRouter();
 
-  // Função que busca os series na API e salva eles no useState
+  // Função que busca as séries no nosso endpoint e salva elas no useState
   async function buscarSeries() {
     if (!busca.trim()) return;
+
+    setErro("");
     setCarregando(true);
 
-    const respostaAPI = await fetch(
-      `https://api.themoviedb.org/3/search/tv?query=${encodeURIComponent(busca)}&api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=pt-BR`,
-    );
-    const dadosAPI = await respostaAPI.json();
+    try {
+      const resposta = await fetch(
+        `/api/tmdb?tipo=serie&q=${encodeURIComponent(busca)}`,
+      );
+      const dados = await resposta.json();
 
-    const series = dadosAPI.results.map((item: any) => ({
-      id: item.id,
-      titulo: item.name,
-      imagem: item.poster_path
-        ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-        : "https://placehold.co/300x450",
-    }));
-    setResultados(series);
-    setCarregando(false);
+      if (!resposta.ok) {
+        setErro(dados.erro ?? "Não foi possível buscar as séries.");
+        setResultados([]);
+        return;
+      }
+
+      const series = (dados.items ?? []).map((item: any) => ({
+        id: item.id,
+        titulo: item.titulo,
+        imagem: item.imagem,
+      }));
+
+      setResultados(series);
+    } catch {
+      setErro("Falha de conexão. Verifique sua internet e tente novamente.");
+      setResultados([]);
+    } finally {
+      setCarregando(false);
+    }
   }
 
   // Função para adicionar series ao banco de dados
@@ -83,7 +97,8 @@ export default function AdicionarPage() {
           />
           <button
             onClick={buscarSeries}
-            className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 px-5 py-3 rounded-xl font-semibold text-sm transition-all"
+            disabled={carregando}
+            className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 px-5 py-3 rounded-xl font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Search size={18} />
             Buscar
@@ -93,6 +108,13 @@ export default function AdicionarPage() {
         {/* Estado de carregando */}
         {carregando && (
           <p className="text-zinc-500 text-center">Buscando Series...</p>
+        )}
+
+        {/* Mensagem de erro */}
+        {erro && (
+          <p className="text-red-400 text-center mb-6" role="alert">
+            {erro}
+          </p>
         )}
 
         {/* Resultados */}
