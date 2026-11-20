@@ -4,8 +4,7 @@ import CardItem from "@/components/CardItem";
 import Header from "@/components/Header";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { observarColecao } from "@/lib/colecoes";
 import { useRouter } from "next/navigation";
 
 type Livro = {
@@ -16,6 +15,7 @@ type Livro = {
   resumo: string;
   apiId: string;
   status: string;
+  imagem?: string;
 };
 
 export default function Home() {
@@ -24,43 +24,19 @@ export default function Home() {
 
   const router = useRouter();
 
-  // Função que busca os livros no firebase e salva eles no useState Livros
-  async function buscarLivros() {
-    // verificamos se n tem livros salvos em cache, se tiver passamos para o useState livros direto, sem ir para o db
-    const cache = localStorage.getItem("livros");
-    if (cache) {
-      setLivros(JSON.parse(cache));
-      setLoading(false);
-      return;
-    }
-
-    // Se não tem cache busca todos os documentos da coleção "livros" no Firestore
-    const colecaoLivros = await getDocs(collection(db, "livros"));
-
-    // Transforma cada documento em um objeto com id + campos do banco
-    const dados = colecaoLivros.docs.map((doc) => ({
-      id: doc.id, // Pegamos cada documento do nosso firebase e adicionamos um campo ID que é o ID do documento no firebase
-      ...doc.data(), // Os campos: titulo, nota, dataInicio, resumo, apiId
-    })) as Livro[];
-
-    dados.sort((a, b) => {
-      if (a.status === "Em andamento") return -1;
-      if (b.status === "Em andamento") return 1;
-
-      if (a.status === "Concluido") return -1;
-      if (b.status === "Concluido") return 1;
-
-      return 0;
-    });
-
-    localStorage.setItem("livros", JSON.stringify(dados));
-
-    setLivros(dados);
-    setLoading(false);
-  }
-
+  // Fica escutando a coleção "livros": qualquer adição, edição ou exclusão
+  // atualiza a tela sem precisar recarregar a página.
   useEffect(() => {
-    buscarLivros();
+    const cancelarEscuta = observarColecao<Livro>(
+      "livros",
+      (livrosAtualizados) => {
+        setLivros(livrosAtualizados);
+        setLoading(false);
+      },
+      () => setLoading(false),
+    );
+
+    return cancelarEscuta;
   }, []);
 
   if (loading)
@@ -96,7 +72,10 @@ export default function Home() {
               <CardItem
                 key={livro.id}
                 title={livro.titulo}
-                imageUrl={`https://books.google.com/books/content?id=${livro.apiId}&printsec=frontcover&img=1&zoom=4`}
+                imageUrl={
+                  livro.imagem ??
+                  `https://books.google.com/books/content?id=${livro.apiId}&printsec=frontcover&img=1&zoom=4`
+                }
                 startDate={livro.dataInicio}
                 rating={livro.nota}
                 type="livro"

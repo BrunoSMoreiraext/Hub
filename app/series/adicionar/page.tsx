@@ -68,7 +68,6 @@ export default function AdicionarPage() {
     });
 
     alert("Serie adicionada com sucesso!");
-    localStorage.removeItem("series");
     router.push("/series");
   }
   return (

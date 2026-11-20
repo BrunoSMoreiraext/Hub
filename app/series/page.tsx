@@ -2,14 +2,15 @@
 
 import CardItem from "@/components/CardItem";
 import Header from "@/components/Header";
+import Recomendacoes from "@/components/Recomendacoes";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { observarColecao } from "@/lib/colecoes";
 import { useRouter } from "next/navigation";
 
 type series = {
   id: string;
+  apiId?: string | number;
   titulo: string;
   nota: number;
   dataInicio: string;
@@ -24,43 +25,19 @@ export default function Home() {
 
   const router = useRouter();
 
-  // Função que busca os livros no firebase e salva eles no useState Livros
-  async function buscarSeries() {
-    // Verificando se n tem series em cache
-    const cache = localStorage.getItem("series");
-    if (cache) {
-      setSeries(JSON.parse(cache));
-      setLoading(false);
-      return;
-    }
-
-    // Busca todos os documentos da coleção "livros" no Firestore
-    const colecaoSeries = await getDocs(collection(db, "series"));
-
-    // Transforma cada documento em um objeto com id + campos do banco
-    const dados = colecaoSeries.docs.map((doc) => ({
-      id: doc.id, // Pegamos cada documento do nosso firebase e adicionamos um campo ID que é o ID do documento no firebase
-      ...doc.data(), // Os campos: titulo, nota, dataInicio, resumo, apiId
-    })) as series[];
-
-    dados.sort((a, b) => {
-      if (a.status === "Em andamento") return -1;
-      if (b.status === "Em andamento") return 1;
-
-      if (a.status === "Concluido") return -1;
-      if (b.status === "Concluido") return 1;
-
-      return 0;
-    });
-
-    localStorage.setItem("series", JSON.stringify(dados));
-
-    setSeries(dados);
-    setLoading(false);
-  }
-
+  // Fica escutando a coleção "series": qualquer adição, edição ou exclusão
+  // atualiza a tela sem precisar recarregar a página.
   useEffect(() => {
-    buscarSeries();
+    const cancelarEscuta = observarColecao<series>(
+      "series",
+      (seriesAtualizadas) => {
+        setSeries(seriesAtualizadas);
+        setLoading(false);
+      },
+      () => setLoading(false),
+    );
+
+    return cancelarEscuta;
   }, []);
 
   if (loading)
@@ -89,7 +66,7 @@ export default function Home() {
     <>
       <Header />
       <div className="p-8 flex flex-col">
-        <h1 className="text-3xl font-bold mb-8 text-white">Minhas séries</h1>
+        <h1 className="text-3xl font-bold mb-8 text-white">Minhas Séries</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {series.map((series) => (
             <Link key={series.id} href={`/series/${series.id}`}>
@@ -105,6 +82,7 @@ export default function Home() {
             </Link>
           ))}
         </div>
+        <Recomendacoes tipo="serie" itens={series} />
         <button
           onClick={() => router.push("series/adicionar")}
           className="z-50 fixed bottom-8 right-8 flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 px-6 py-4 rounded-2xl font-semibold text-sm transition-all duration-300 shadow-xl shadow-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/40 active:scale-95 hover:scale-105 animate-float group"

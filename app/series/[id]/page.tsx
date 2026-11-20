@@ -47,7 +47,6 @@ export default function EditPage() {
     });
 
     alert("Serie atualizada com sucesso!");
-    localStorage.removeItem("series");
     router.push("/series");
   }
 
@@ -73,7 +72,6 @@ export default function EditPage() {
   async function apagarSerie(id: string) {
     const referencia = doc(db, "series", id); // Pegando o elemento que cliquei e que quero apagar
     await deleteDoc(referencia);
-    localStorage.removeItem("series");
     router.back();
   }
 

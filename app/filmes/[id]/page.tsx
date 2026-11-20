@@ -47,7 +47,6 @@ export default function EditPage() {
     });
 
     alert("Filme atualizado com sucesso!");
-    localStorage.removeItem("filmes");
     router.push("/filmes");
   }
 
@@ -73,7 +72,6 @@ export default function EditPage() {
   async function apagarFilme(id: string) {
     const referencia = doc(db, "filmes", id); // Pegando o elemento que cliquei e que quero apagar
     await deleteDoc(referencia);
-    localStorage.removeItem("filmes");
     router.back();
   }
 

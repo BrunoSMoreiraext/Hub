@@ -63,6 +63,7 @@ export default function AdicionarPage() {
     await addDoc(collection(db, "livros"), {
       apiId: livro.id,
       titulo: livro.titulo,
+      imagem: livro.imagem,
       resumo: "",
       dataInicio: "",
       nota: 0,
@@ -70,7 +71,6 @@ export default function AdicionarPage() {
     });
 
     alert("Livro adicionado com sucesso!");
-    localStorage.removeItem("livros");
     router.push("/");
   }
   return (
