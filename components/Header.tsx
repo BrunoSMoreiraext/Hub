@@ -57,9 +57,13 @@ export default function Header() {
 
         {/* Lado Direito: Busca e Perfil */}
         <div className="flex items-center gap-3">
-          <button className="p-2 text-zinc-400 hover:text-amber-400 hover:bg-zinc-800/50 rounded-full transition-all duration-300 hover:scale-110">
+          <Link
+            href="/busca"
+            aria-label="Buscar na biblioteca"
+            className="p-2 text-zinc-400 hover:text-amber-400 hover:bg-zinc-800/50 rounded-full transition-all duration-300 hover:scale-110"
+          >
             <Search size={20} />
-          </button>
+          </Link>
 
           <div className="h-9 w-9 rounded-full">
             {/* Placeholder para imagem de perfil ou iniciais */}
