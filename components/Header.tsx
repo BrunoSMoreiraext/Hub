@@ -7,7 +7,7 @@ import { Film, Tv, BookOpen, Search, User, Menu, X } from "lucide-react";
 
 export default function Header() {
   const pathname = usePathname();
-  const [isOpen, ReactSetIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const hrefBusca = pathname.startsWith("/filmes")
     ? "/busca?tipo=filmes"
