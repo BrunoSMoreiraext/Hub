@@ -7,7 +7,15 @@ import { Film, Tv, BookOpen, Search, User, Menu, X } from "lucide-react";
 
 export default function Header() {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, ReactSetIsOpen] = React.useState(false);
+
+  const hrefBusca = pathname.startsWith("/filmes")
+    ? "/busca?tipo=filmes"
+    : pathname.startsWith("/series")
+      ? "/busca?tipo=series"
+      : pathname.startsWith("/livros")
+        ? "/busca?tipo=livros"
+        : "/busca";
 
   return (
     <header className="sticky top-0 w-full border-b border-zinc-800/50 bg-black/90 backdrop-blur-xl z-100 shadow-lg">
@@ -58,7 +66,7 @@ export default function Header() {
         {/* Lado Direito: Busca e Perfil */}
         <div className="flex items-center gap-3">
           <Link
-            href="/busca"
+            href={hrefBusca}
             aria-label="Buscar na biblioteca"
             className="p-2 text-zinc-400 hover:text-amber-400 hover:bg-zinc-800/50 rounded-full transition-all duration-300 hover:scale-110"
           >
