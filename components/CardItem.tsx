@@ -12,6 +12,7 @@ export default function CardItem({
   startDate,
   rating,
   status,
+  typeLabel,
 }: any) {
   // Função para renderizar as estrelas baseadas na nota
   const renderStars = (rating: number) => {
@@ -53,6 +54,12 @@ export default function CardItem({
         >
           {status}
         </div>
+
+        {typeLabel && (
+          <div className="absolute bottom-2 right-2 z-10 px-3 py-1 text-xs font-bold text-amber-400 bg-black/80 border border-amber-500/40 rounded-full backdrop-blur-sm shadow-lg">
+            {typeLabel}
+          </div>
+        )}
 
         {/* Camada de sobreposição*/}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
