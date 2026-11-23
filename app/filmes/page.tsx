@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { observarColecao } from "@/lib/colecoes";
 import { useRouter } from "next/navigation";
+import FiltroCategorias from "@/components/FiltroCategorias";
 
 type Filmes = {
   id: string;
@@ -17,11 +18,13 @@ type Filmes = {
   resumo: string;
   status: string;
   imagem: string;
+  categorias?: string[];
 };
 
 export default function Home() {
   const [filmes, setFilmes] = useState<Filmes[]>([]);
   const [loading, setLoading] = useState(true);
+  const [categoriaFiltro, setCategoriaFiltro] = useState("Todas");
 
   const router = useRouter();
 
@@ -46,23 +49,36 @@ export default function Home() {
         Carregando...
       </div>
     );
+  
+  const categoriasDisponiveis = Array.from(
+    new Set(filmes.flatMap((filme) => filme.categorias ?? [])),
+  ).sort((a, b) => a.localeCompare(b, "pt-BR"));
 
+  const filmesFiltrados =
+    categoriaFiltro === "Todas"
+      ? filmes
+      : filmes.filter((filme) => filme.categorias?.includes(categoriaFiltro));
   return (
     <>
       <Header />
       <div className="p-8 flex flex-col">
         <h1 className="text-3xl font-bold mb-8 text-white">Meus Filmes</h1>
+        <FiltroCategorias
+          categorias={categoriasDisponiveis}
+          selecionada={categoriaFiltro}
+          onChange={setCategoriaFiltro}
+        />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {filmes.map((filmes) => (
-            <Link key={filmes.id} href={`/filmes/${filmes.id}`}>
+          {filmesFiltrados.map((filme) => (
+            <Link key={filme.id} href={`/filmes/${filme.id}`}>
               <CardItem
-                key={filmes.id}
-                title={filmes.titulo}
-                imageUrl={filmes.imagem}
-                startDate={filmes.dataInicio}
-                rating={filmes.nota}
+                key={filme.id}
+                title={filme.titulo}
+                imageUrl={filme.imagem}
+                startDate={filme.dataInicio}
+                rating={filme.nota}
                 type="filmes"
-                status={filmes.status}
+                status={filme.status}
               />
             </Link>
           ))}

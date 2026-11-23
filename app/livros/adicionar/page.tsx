@@ -6,6 +6,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Header from "@/components/Header";
 import { Search, Plus, ChevronLeft } from "lucide-react";
+import { buscarCategorias } from "@/lib/categorias";
 
 type LivroAPI = {
   id: string;
@@ -18,6 +19,7 @@ export default function AdicionarPage() {
   const [carregando, setCarregando] = useState(false);
   const [resultados, setResultados] = useState<LivroAPI[]>([]);
   const [erro, setErro] = useState("");
+  const [adicionando, setAdicionando] = useState(false);
   const router = useRouter();
 
   // Função que busca os livros no endpoint e salva eles no useState
@@ -60,18 +62,28 @@ export default function AdicionarPage() {
   // Função para adicionar livros ao banco de dados
 
   async function adicionarLivro(livro: LivroAPI) {
-    await addDoc(collection(db, "livros"), {
-      apiId: livro.id,
-      titulo: livro.titulo,
-      imagem: livro.imagem,
-      resumo: "",
-      dataInicio: "",
-      nota: 0,
-      status: "Não iniciado",
-    });
+    if (adicionando) return;
+    setAdicionando(true);
 
-    alert("Livro adicionado com sucesso!");
-    router.push("/");
+    try {
+      const categorias = await buscarCategorias("livro", livro.id);
+
+      await addDoc(collection(db, "livros"), {
+        apiId: livro.id,
+        titulo: livro.titulo,
+        imagem: livro.imagem,
+        resumo: "",
+        dataInicio: "",
+        nota: 0,
+        status: "Não iniciado",
+        ...(categorias ? { categorias } : {}),
+      });
+
+      alert("Livro adicionado com sucesso!");
+      router.push("/livros");
+    } finally {
+      setAdicionando(false);
+    }
   }
   return (
     <>
@@ -136,6 +148,7 @@ export default function AdicionarPage() {
               </p>
               <button
                 onClick={() => adicionarLivro(livro)}
+                disabled={adicionando}
                 className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-amber-600 text-zinc-400 hover:text-white text-xs font-semibold py-2 rounded-lg transition-all"
               >
                 <Plus size={14} />
