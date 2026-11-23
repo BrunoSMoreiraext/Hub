@@ -6,6 +6,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Header from "@/components/Header";
 import { Search, Plus, ChevronLeft } from "lucide-react";
+import { buscarCategorias } from "@/lib/categorias";
 
 type SeriesAPI = {
   id: string;
@@ -18,6 +19,7 @@ export default function AdicionarPage() {
   const [carregando, setCarregando] = useState(false);
   const [resultados, setResultados] = useState<SeriesAPI[]>([]);
   const [erro, setErro] = useState("");
+  const [adicionando, setAdicionando] = useState(false);
   const router = useRouter();
 
   // Função que busca as séries no nosso endpoint e salva elas no useState
@@ -57,18 +59,28 @@ export default function AdicionarPage() {
   // Função para adicionar series ao banco de dados
 
   async function adicionarSerie(serie: SeriesAPI) {
-    await addDoc(collection(db, "series"), {
-      apiId: serie.id,
-      titulo: serie.titulo,
-      resumo: "",
-      dataInicio: "",
-      nota: 0,
-      status: "Não iniciado",
-      imagem: serie.imagem,
-    });
+    if (adicionando) return;
+    setAdicionando(true);
 
-    alert("Serie adicionada com sucesso!");
-    router.push("/series");
+    try {
+      const categorias = await buscarCategorias("serie", serie.id);
+
+      await addDoc(collection(db, "series"), {
+        apiId: serie.id,
+        titulo: serie.titulo,
+        resumo: "",
+        dataInicio: "",
+        nota: 0,
+        status: "Não iniciado",
+        imagem: serie.imagem,
+        ...(categorias ? { categorias } : {}),
+      });
+
+      alert("Serie adicionada com sucesso!");
+      router.push("/series");
+    } finally {
+      setAdicionando(false);
+    }
   }
   return (
     <>
@@ -133,6 +145,7 @@ export default function AdicionarPage() {
               </p>
               <button
                 onClick={() => adicionarSerie(serie)}
+                disabled={adicionando}
                 className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-amber-600 text-zinc-400 hover:text-white text-xs font-semibold py-2 rounded-lg transition-all"
               >
                 <Plus size={14} />
