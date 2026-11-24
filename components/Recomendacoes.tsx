@@ -16,6 +16,7 @@ type ItemBiblioteca = {
 
 type Props = {
   tipo: Tipo;
+  userId: string;
   itens?: ItemBiblioteca[];
 };
 
@@ -99,6 +100,7 @@ async function buscarRecomendacoes(tipo: Tipo): Promise<Recomendacao[]> {
 
 export default function Recomendacoes({
   tipo,
+  userId,
   itens = BIBLIOTECA_VAZIA,
 }: Props) {
   const [recomendacoes, setRecomendacoes] = useState<Recomendacao[]>([]);
@@ -186,7 +188,10 @@ export default function Recomendacoes({
     try {
       const documento = montarDocumentoParaAdicionar(item);
 
-      await addDoc(collection(db, colecao), documento);
+      await addDoc(
+        collection(db, "usuarios", userId, colecao),
+        documento,
+      );
 
       setRecomendacoes((recomendacoesAtuais) =>
         recomendacoesAtuais.filter(
