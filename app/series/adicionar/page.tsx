@@ -6,6 +6,8 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Header from "@/components/Header";
 import { Search, Plus, ChevronLeft } from "lucide-react";
+import { useRequireAuth } from "@/lib/AuthContext";
+
 
 type SeriesAPI = {
   id: string;
@@ -19,6 +21,7 @@ export default function AdicionarPage() {
   const [resultados, setResultados] = useState<SeriesAPI[]>([]);
   const [erro, setErro] = useState("");
   const router = useRouter();
+  const { user, carregando: authCarregando } = useRequireAuth();
 
   // Função que busca as séries no nosso endpoint e salva elas no useState
   async function buscarSeries() {
@@ -57,19 +60,35 @@ export default function AdicionarPage() {
   // Função para adicionar series ao banco de dados
 
   async function adicionarSerie(serie: SeriesAPI) {
-    await addDoc(collection(db, "series"), {
-      apiId: serie.id,
-      titulo: serie.titulo,
-      resumo: "",
-      dataInicio: "",
-      nota: 0,
-      status: "Não iniciado",
-      imagem: serie.imagem,
-    });
+    if (!user) return;
 
-    alert("Serie adicionada com sucesso!");
-    router.push("/series");
+    try {
+      await addDoc(collection(db, "usuarios", user.uid, "series"), {
+        apiId: serie.id,
+        titulo: serie.titulo,
+        resumo: "",
+        dataInicio: "",
+        nota: 0,
+        status: "Não iniciado",
+        imagem: serie.imagem,
+      });
+
+      alert("Serie adicionada com sucesso!");
+      router.push("/series");
+    } catch (error) {
+      console.error("Falha ao adicionar série:", error);
+      setErro("Não foi possível adicionar a série. Tente novamente.");
+    }
   }
+
+  if (authCarregando || !user) {
+    return (
+      <div className="h-screen bg-zinc-950 flex items-center justify-center text-white">
+        Carregando...
+      </div>
+    );
+  }
+
   return (
     <>
       <Header />

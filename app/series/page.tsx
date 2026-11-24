@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { observarColecao } from "@/lib/colecoes";
 import { useRouter } from "next/navigation";
+import { useRequireAuth } from "@/lib/AuthContext";
+
 
 type series = {
   id: string;
@@ -24,11 +26,13 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
+  const { user, carregando } = useRequireAuth();
 
-  // Fica escutando a coleção "series": qualquer adição, edição ou exclusão
-  // atualiza a tela sem precisar recarregar a página.
   useEffect(() => {
+    if (carregando || !user) return;
+
     const cancelarEscuta = observarColecao<series>(
+      user.uid,
       "series",
       (seriesAtualizadas) => {
         setSeries(seriesAtualizadas);
@@ -38,27 +42,12 @@ export default function Home() {
     );
 
     return cancelarEscuta;
-  }, []);
+  }, [user, carregando]);
 
-  if (loading)
+  if (carregando || loading || !user)
     return (
-      <div className="h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative">
-            <div className="w-16 h-16 border-4 border-amber-500/30 border-t-transparent border-r-transparent animate-spin rounded-full"></div>
-            <div
-              className="absolute inset-0 w-16 h-16 border-4 border-amber-500/60 border-t-transparent border-r-transparent animate-spin rounded-full"
-              style={{ animationDelay: "0.15s" }}
-            ></div>
-            <div
-              className="absolute inset-2 w-12 h-12 border-4 border-amber-400/80 border-t-transparent border-r-transparent animate-spin rounded-full"
-              style={{ animationDelay: "0.3s" }}
-            ></div>
-          </div>
-          <p className="text-amber-400 font-medium animate-pulse">
-            Carregando séries...
-          </p>
-        </div>
+      <div className="h-screen bg-zinc-950 flex items-center justify-center text-white">
+        Carregando...
       </div>
     );
 
@@ -84,7 +73,7 @@ export default function Home() {
         </div>
         <Recomendacoes tipo="serie" itens={series} />
         <button
-          onClick={() => router.push("series/adicionar")}
+          onClick={() => router.push("/series/adicionar")}
           className="z-50 fixed bottom-8 right-8 flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 px-6 py-4 rounded-2xl font-semibold text-sm transition-all duration-300 shadow-xl shadow-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/40 active:scale-95 hover:scale-105 animate-float group"
         >
           <span className="text-xl animate-pulse">+</span>

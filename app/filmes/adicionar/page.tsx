@@ -6,6 +6,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Header from "@/components/Header";
 import { Search, Plus, ChevronLeft } from "lucide-react";
+import { useRequireAuth } from "@/lib/AuthContext";
 
 type FilmesAPI = {
   id: string;
@@ -19,11 +20,10 @@ export default function AdicionarPage() {
   const [resultados, setResultados] = useState<FilmesAPI[]>([]);
   const [erro, setErro] = useState("");
   const router = useRouter();
+  const { user, carregando: authCarregando } = useRequireAuth();
 
-  // Função que busca os filmes no nosso endpoint e salva eles no useState
   async function buscarFilmes() {
     if (!busca.trim()) return;
-
     setErro("");
     setCarregando(true);
 
@@ -54,27 +54,40 @@ export default function AdicionarPage() {
     }
   }
 
-  // Função para adicionar Filmes ao banco de dados
-
   async function adicionarFilme(filme: FilmesAPI) {
-    await addDoc(collection(db, "filmes"), {
-      apiId: filme.id,
-      titulo: filme.titulo,
-      resumo: "",
-      dataInicio: "",
-      nota: 0,
-      status: "Não iniciado",
-      imagem: filme.imagem,
-    });
+    if (!user) return;
 
-    alert("Filme adicionado com sucesso!");
-    router.push("/filmes");
+    try {
+      await addDoc(collection(db, "usuarios", user.uid, "filmes"), {
+        apiId: filme.id,
+        titulo: filme.titulo,
+        resumo: "",
+        dataInicio: "",
+        nota: 0,
+        status: "Não iniciado",
+        imagem: filme.imagem,
+      });
+
+      alert("Filme adicionado com sucesso!");
+      router.push("/filmes");
+    } catch (error) {
+      console.error("Falha ao adicionar filme:", error);
+      setErro("Não foi possível adicionar o filme. Tente novamente.");
+    }
   }
+
+  if (authCarregando || !user) {
+    return (
+      <div className="h-screen bg-zinc-950 flex items-center justify-center text-white">
+        Carregando...
+      </div>
+    );
+  }
+
   return (
     <>
       <Header />
       <div className="p-8 max-w-4xl mx-auto">
-        {/* Botão voltar e título */}
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8"
@@ -84,7 +97,6 @@ export default function AdicionarPage() {
         </button>
         <h1 className="text-3xl font-bold mb-8 text-white">Adicionar Filme</h1>
 
-        {/* Campo de busca */}
         <div className="flex flex-col md:flex-row gap-3 mb-8">
           <input
             type="text"
@@ -104,19 +116,16 @@ export default function AdicionarPage() {
           </button>
         </div>
 
-        {/* Estado de carregando */}
         {carregando && (
           <p className="text-zinc-500 text-center">Buscando Filmes...</p>
         )}
 
-        {/* Mensagem de erro */}
         {erro && (
           <p className="text-red-400 text-center mb-6" role="alert">
             {erro}
           </p>
         )}
 
-        {/* Resultados */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {resultados.map((filme) => (
             <div

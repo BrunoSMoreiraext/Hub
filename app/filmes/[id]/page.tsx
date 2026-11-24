@@ -10,9 +10,9 @@ import {
   Star,
   Film,
 } from "lucide-react";
-import { deleteDoc, doc, getDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { updateDoc } from "firebase/firestore";
+import { useRequireAuth } from "@/lib/AuthContext";
 
 type Filme = {
   titulo: string;
@@ -27,55 +27,93 @@ export default function EditPage() {
   const { id } = useParams();
   const idTransformadoEmString = id as string;
   const router = useRouter();
+  const { user, carregando: authCarregando } = useRequireAuth();
 
   const [titulo, setTitulo] = useState("");
   const [resumo, setResumo] = useState("");
+  const [erro, setErro] = useState("");
   const [status, setStatus] = useState("Quero Ler");
   const [dataInicio, setDataInicio] = useState("");
   const [nota, setNota] = useState(0);
   const [loading, setLoading] = useState(true);
 
   async function updateNovasInformacoes() {
-    const referencia = doc(db, "filmes", idTransformadoEmString); // buscamos no banco os dados que queremos editar
+    if (!user) return;
 
-    await updateDoc(referencia, {
-      titulo: titulo,
-      resumo: resumo,
-      dataInicio: dataInicio,
-      nota: nota,
-      status: status,
-    });
-
-    alert("Filme atualizado com sucesso!");
-    router.push("/filmes");
+    try {
+      const referencia = doc(
+        db,
+        "usuarios",
+        user.uid,
+        "filmes",
+        idTransformadoEmString,
+      );
+      await updateDoc(referencia, { titulo, resumo, dataInicio, nota, status });
+      alert("Filme atualizado com sucesso!");
+      router.push("/filmes");
+    } catch (error) {
+      console.error("Falha ao atualizar filme:", error);
+      setErro("Não foi possível salvar as alterações do filme.");
+    }
   }
 
   // Use effect que recebe o ID do produto clicado na página principal e procura os dados dele no banco de dados
   useEffect(() => {
+    if (authCarregando || !user) return;
+    const userId = user.uid;
+
     async function buscarFilmeAtual() {
-      const filmeAtual = doc(db, "filmes", idTransformadoEmString);
-      const filmeAtualAberto = await getDoc(filmeAtual);
+      try {
+        const filmeAtual = doc(
+          db,
+          "usuarios",
+          userId,
+          "filmes",
+          idTransformadoEmString,
+        );
+        const filmeAtualAberto = await getDoc(filmeAtual);
 
-      if (filmeAtualAberto.exists()) {
-        const dados = filmeAtualAberto.data() as Filme;
-        setTitulo(dados.titulo);
-        setDataInicio(dados.dataInicio);
-        setResumo(dados.resumo);
-        setStatus(dados.status);
-        setNota(dados.nota);
+        if (filmeAtualAberto.exists()) {
+          const dados = filmeAtualAberto.data() as Filme;
+          setTitulo(dados.titulo);
+          setDataInicio(dados.dataInicio);
+          setResumo(dados.resumo);
+          setStatus(dados.status);
+          setNota(dados.nota);
+        } else {
+          setErro("Filme não encontrado.");
+        }
+      } catch (error) {
+        console.error("Falha ao carregar filme:", error);
+        setErro("Não foi possível carregar o filme.");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
-    buscarFilmeAtual();
-  }, [id]);
 
-  async function apagarFilme(id: string) {
-    const referencia = doc(db, "filmes", id); // Pegando o elemento que cliquei e que quero apagar
-    await deleteDoc(referencia);
-    router.back();
+    void buscarFilmeAtual();
+  }, [idTransformadoEmString, user, authCarregando]);
+
+  async function apagarFilme() {
+    if (!user) return;
+
+    try {
+      const referencia = doc(
+        db,
+        "usuarios",
+        user.uid,
+        "filmes",
+        idTransformadoEmString,
+      );
+      await deleteDoc(referencia);
+      router.back();
+    } catch (error) {
+      console.error("Falha ao excluir filme:", error);
+      setErro("Não foi possível excluir o filme.");
+    }
   }
 
-  if (loading)
+  if (authCarregando || loading || !user)
     return (
       <div className="h-screen bg-zinc-950 flex items-center justify-center">
         <Loader2 className="animate-spin text-amber-500" />
@@ -109,13 +147,19 @@ export default function EditPage() {
             </button>
 
             <button
-              onClick={() => apagarFilme(idTransformadoEmString)}
+              onClick={apagarFilme}
               className="flex items-center gap-2 bg-red-700 hover:bg-red-900 px-5 py-2 rounded-full font-semibold text-sm transition-all shadow-lg shadow-red-500/20 active:scale-95"
             >
               <Trash size={18} />
             </button>
           </div>
         </div>
+
+        {erro && (
+          <p className="mb-6 text-center text-red-400" role="alert">
+            {erro}
+          </p>
+        )}
 
         {/* Título e Meta-informações */}
         <header className="mb-12">

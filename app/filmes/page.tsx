@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { observarColecao } from "@/lib/colecoes";
 import { useRouter } from "next/navigation";
+import { useRequireAuth } from "@/lib/AuthContext";
 
 type Filmes = {
   id: string;
@@ -19,16 +20,17 @@ type Filmes = {
   imagem: string;
 };
 
-export default function Home() {
+export default function FilmesPage() {
   const [filmes, setFilmes] = useState<Filmes[]>([]);
   const [loading, setLoading] = useState(true);
-
   const router = useRouter();
+  const { user, carregando } = useRequireAuth();
 
-  // Fica escutando a coleção "filmes": qualquer adição, edição ou exclusão
-  // atualiza a tela sem precisar recarregar a página.
   useEffect(() => {
+    if (carregando || !user) return;
+
     const cancelarEscuta = observarColecao<Filmes>(
+      user.uid,
       "filmes",
       (filmesAtualizados) => {
         setFilmes(filmesAtualizados);
@@ -38,9 +40,9 @@ export default function Home() {
     );
 
     return cancelarEscuta;
-  }, []);
+  }, [user, carregando]);
 
-  if (loading)
+  if (carregando || loading || !user)
     return (
       <div className="h-screen bg-zinc-950 flex items-center justify-center text-white">
         Carregando...
@@ -53,23 +55,23 @@ export default function Home() {
       <div className="p-8 flex flex-col">
         <h1 className="text-3xl font-bold mb-8 text-white">Meus Filmes</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {filmes.map((filmes) => (
-            <Link key={filmes.id} href={`/filmes/${filmes.id}`}>
+          {filmes.map((filme) => (
+            <Link key={filme.id} href={`/filmes/${filme.id}`}>
               <CardItem
-                key={filmes.id}
-                title={filmes.titulo}
-                imageUrl={filmes.imagem}
-                startDate={filmes.dataInicio}
-                rating={filmes.nota}
+                key={filme.id}
+                title={filme.titulo}
+                imageUrl={filme.imagem}
+                startDate={filme.dataInicio}
+                rating={filme.nota}
                 type="filmes"
-                status={filmes.status}
+                status={filme.status}
               />
             </Link>
           ))}
         </div>
         <Recomendacoes tipo="filme" itens={filmes} />
         <button
-          onClick={() => router.push("filmes/adicionar")}
+          onClick={() => router.push("/filmes/adicionar")}
           className="z-50 fixed bottom-8 right-8 flex items-center gap-2 bg-amber-500 hover:bg-amber-600 px-6 py-4 rounded-2xl font-semibold text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95"
         >
           <span className="text-xl">+</span>

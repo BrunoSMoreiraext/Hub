@@ -6,6 +6,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Header from "@/components/Header";
 import { Search, Plus, ChevronLeft } from "lucide-react";
+import { useRequireAuth } from "@/lib/AuthContext";
 
 type LivroAPI = {
   id: string;
@@ -19,6 +20,7 @@ export default function AdicionarPage() {
   const [resultados, setResultados] = useState<LivroAPI[]>([]);
   const [erro, setErro] = useState("");
   const router = useRouter();
+  const { user, carregando: authCarregando } = useRequireAuth();
 
   // Função que busca os livros no endpoint e salva eles no useState
   async function buscarLivros() {
@@ -60,19 +62,35 @@ export default function AdicionarPage() {
   // Função para adicionar livros ao banco de dados
 
   async function adicionarLivro(livro: LivroAPI) {
-    await addDoc(collection(db, "livros"), {
-      apiId: livro.id,
-      titulo: livro.titulo,
-      imagem: livro.imagem,
-      resumo: "",
-      dataInicio: "",
-      nota: 0,
-      status: "Não iniciado",
-    });
+    if (!user) return;
 
-    alert("Livro adicionado com sucesso!");
-    router.push("/");
+    try {
+      await addDoc(collection(db, "usuarios", user.uid, "livros"), {
+        apiId: livro.id,
+        titulo: livro.titulo,
+        imagem: livro.imagem,
+        resumo: "",
+        dataInicio: "",
+        nota: 0,
+        status: "Não iniciado",
+      });
+
+      alert("Livro adicionado com sucesso!");
+      router.push("/livros");
+    } catch (error) {
+      console.error("Falha ao adicionar livro:", error);
+      setErro("Não foi possível adicionar o livro. Tente novamente.");
+    }
   }
+
+  if (authCarregando || !user) {
+    return (
+      <div className="h-screen bg-zinc-950 flex items-center justify-center text-white">
+        Carregando...
+      </div>
+    );
+  }
+
   return (
     <>
       <Header />

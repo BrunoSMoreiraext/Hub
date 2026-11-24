@@ -3,8 +3,19 @@
 import Header from "@/components/Header";
 import Link from "next/link";
 import { BookOpen, Tv, Film } from "lucide-react";
+import { useRequireAuth } from "@/lib/AuthContext";
 
 export default function Home() {
+  const { user, carregando } = useRequireAuth();
+
+  if (carregando || !user) {
+    return (
+      <div className="h-screen bg-zinc-950 flex items-center justify-center text-white">
+        Carregando...
+      </div>
+    );
+  }
+
   return (
     <>
       <Header />
