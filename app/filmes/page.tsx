@@ -86,7 +86,7 @@ export default function FilmesPage() {
             </Link>
           ))}
         </div>
-        <Recomendacoes tipo="filme" itens={filmes} />
+        <Recomendacoes tipo="filme" userId={user.uid} itens={filmes} />
         <button
           onClick={() => router.push("/filmes/adicionar")}
           className="z-50 fixed bottom-8 right-8 flex items-center gap-2 bg-amber-500 hover:bg-amber-600 px-6 py-4 rounded-2xl font-semibold text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95"

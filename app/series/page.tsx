@@ -95,7 +95,7 @@ export default function Home() {
           <p className="text-zinc-500">Nenhuma série nessa categoria.</p>
         )}
 
-        <Recomendacoes tipo="serie" itens={series} />
+        <Recomendacoes tipo="serie" userId={user.uid} itens={series} />
 
         <button
           onClick={() => router.push("/series/adicionar")}
