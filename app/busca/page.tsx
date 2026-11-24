@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import { observarColecao } from "@/lib/colecoes";
 import { Search, ChevronLeft, X } from "lucide-react";
 import CardItem from "@/components/CardItem";
+import { useRequireAuth } from "@/lib/AuthContext";
 
 type TipoBusca = "todos" | "filmes" | "series" | "livros";
 
@@ -99,14 +100,18 @@ function ConteudoBusca({ tipoFiltro }: { tipoFiltro: TipoBusca }) {
   const [carregandoSeries, setCarregandoSeries] = useState(deveBuscarSeries);
 
   const router = useRouter();
+  const { user, carregando: authCarregando } = useRequireAuth();
   const config = CONFIG_BUSCA[tipoFiltro];
 
   useEffect(() => {
+    if (authCarregando || !user) return;
+
     const canceladores: (() => void)[] = [];
 
     if (deveBuscarFilmes) {
       canceladores.push(
         observarColecao<Filme>(
+          user.uid,
           "filmes",
           (dados) => {
             setFilmes(dados);
@@ -120,6 +125,7 @@ function ConteudoBusca({ tipoFiltro }: { tipoFiltro: TipoBusca }) {
     if (deveBuscarLivros) {
       canceladores.push(
         observarColecao<Livro>(
+          user.uid,
           "livros",
           (dados) => {
             setLivros(dados);
@@ -133,6 +139,7 @@ function ConteudoBusca({ tipoFiltro }: { tipoFiltro: TipoBusca }) {
     if (deveBuscarSeries) {
       canceladores.push(
         observarColecao<Serie>(
+          user.uid,
           "series",
           (dados) => {
             setSeries(dados);
@@ -146,7 +153,13 @@ function ConteudoBusca({ tipoFiltro }: { tipoFiltro: TipoBusca }) {
     return () => {
       canceladores.forEach((cancelar) => cancelar());
     };
-  }, [deveBuscarFilmes, deveBuscarLivros, deveBuscarSeries]);
+  }, [
+    authCarregando,
+    user,
+    deveBuscarFilmes,
+    deveBuscarLivros,
+    deveBuscarSeries,
+  ]);
 
   const carregando = carregandoFilmes || carregandoLivros || carregandoSeries;
 
@@ -227,6 +240,14 @@ function ConteudoBusca({ tipoFiltro }: { tipoFiltro: TipoBusca }) {
     livros,
   ]);
 
+  if (authCarregando || !user) {
+    return (
+      <div className="h-screen bg-zinc-950 flex items-center justify-center text-white">
+        Carregando...
+      </div>
+    );
+  }
+
   return (
     <>
       <Header />
@@ -290,7 +311,7 @@ function ConteudoBusca({ tipoFiltro }: { tipoFiltro: TipoBusca }) {
         {/* Estado: busca realizada sem resultados */}
         {!carregando && termoAplicado && resultados.length === 0 && (
           <p className="text-zinc-400 text-center">
-            {config.vazio} para "{termoAplicado}".
+            {config.vazio} para &quot;{termoAplicado}&quot;.
           </p>
         )}
 
@@ -301,7 +322,7 @@ function ConteudoBusca({ tipoFiltro }: { tipoFiltro: TipoBusca }) {
             <Link
                 key={`${obra.tipo}-${obra.id}`}
                 href={obra.href}
-            >  
+            >
                 <CardItem
                 title={obra.titulo}
                 imageUrl={obra.imagem}

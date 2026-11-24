@@ -6,6 +6,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Header from "@/components/Header";
 import { Search, Plus, ChevronLeft } from "lucide-react";
+import { useRequireAuth } from "@/lib/AuthContext";
 import { buscarCategorias } from "@/lib/categorias";
 
 type LivroAPI = {
@@ -21,6 +22,7 @@ export default function AdicionarPage() {
   const [erro, setErro] = useState("");
   const [adicionando, setAdicionando] = useState(false);
   const router = useRouter();
+  const { user, carregando: authCarregando } = useRequireAuth();
 
   // Função que busca os livros no endpoint e salva eles no useState
   async function buscarLivros() {
@@ -62,13 +64,14 @@ export default function AdicionarPage() {
   // Função para adicionar livros ao banco de dados
 
   async function adicionarLivro(livro: LivroAPI) {
-    if (adicionando) return;
+    if (!user || adicionando) return;
     setAdicionando(true);
+    setErro("");
 
     try {
       const categorias = await buscarCategorias("livro", livro.id);
 
-      await addDoc(collection(db, "livros"), {
+      await addDoc(collection(db, "usuarios", user.uid, "livros"), {
         apiId: livro.id,
         titulo: livro.titulo,
         imagem: livro.imagem,
@@ -81,10 +84,22 @@ export default function AdicionarPage() {
 
       alert("Livro adicionado com sucesso!");
       router.push("/livros");
+    } catch (error) {
+      console.error("Falha ao adicionar livro:", error);
+      setErro("Não foi possível adicionar o livro. Tente novamente.");
     } finally {
       setAdicionando(false);
     }
   }
+
+  if (authCarregando || !user) {
+    return (
+      <div className="h-screen bg-zinc-950 flex items-center justify-center text-white">
+        Carregando...
+      </div>
+    );
+  }
+
   return (
     <>
       <Header />

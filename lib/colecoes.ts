@@ -17,18 +17,18 @@ export function ordenarPorStatus<T extends { status: string }>(
   return [...itens].sort((a, b) => {
     const posicaoA = ORDEM_STATUS[a.status] ?? POSICAO_STATUS_DESCONHECIDO;
     const posicaoB = ORDEM_STATUS[b.status] ?? POSICAO_STATUS_DESCONHECIDO;
-
     return posicaoA - posicaoB;
   });
 }
 
 export function observarColecao<T extends { id: string; status: string }>(
+  userId: string,         
   nome: NomeDaColecao,
   aoAtualizar: (itens: T[]) => void,
   aoFalhar?: (erro: Error) => void,
 ) {
   return onSnapshot(
-    collection(db, nome),
+    collection(db, "usuarios", userId, nome),
     (snapshot) => {
       const itens = snapshot.docs.map((documento) => ({
         id: documento.id,

@@ -3,14 +3,25 @@
 import Header from "@/components/Header";
 import Link from "next/link";
 import { BookOpen, Tv, Film } from "lucide-react";
+import { useRequireAuth } from "@/lib/AuthContext";
 
 export default function Home() {
+  const { user, carregando } = useRequireAuth();
+
+  if (carregando || !user) {
+    return (
+      <div className="h-screen bg-zinc-950 flex items-center justify-center text-white">
+        Carregando...
+      </div>
+    );
+  }
+
   return (
     <>
       <Header />
       <div className="p-8 mb-15 max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold mb-12 text-gradient animate-fadeIn">
-          Bem-vindo ao Hub
+          Bem-vindo ao Geek Hub
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

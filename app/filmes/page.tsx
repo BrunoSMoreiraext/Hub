@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { observarColecao } from "@/lib/colecoes";
 import { useRouter } from "next/navigation";
+import { useRequireAuth } from "@/lib/AuthContext";
 import FiltroCategorias from "@/components/FiltroCategorias";
 
 type Filmes = {
@@ -21,17 +22,19 @@ type Filmes = {
   categorias?: string[];
 };
 
-export default function Home() {
+export default function FilmesPage() {
   const [filmes, setFilmes] = useState<Filmes[]>([]);
   const [loading, setLoading] = useState(true);
   const [categoriaFiltro, setCategoriaFiltro] = useState("Todas");
 
   const router = useRouter();
+  const { user, carregando } = useRequireAuth();
 
-  // Fica escutando a coleção "filmes": qualquer adição, edição ou exclusão
-  // atualiza a tela sem precisar recarregar a página.
   useEffect(() => {
+    if (carregando || !user) return;
+
     const cancelarEscuta = observarColecao<Filmes>(
+      user.uid,
       "filmes",
       (filmesAtualizados) => {
         setFilmes(filmesAtualizados);
@@ -41,15 +44,15 @@ export default function Home() {
     );
 
     return cancelarEscuta;
-  }, []);
+  }, [user, carregando]);
 
-  if (loading)
+  if (carregando || loading || !user)
     return (
       <div className="h-screen bg-zinc-950 flex items-center justify-center text-white">
         Carregando...
       </div>
     );
-  
+
   const categoriasDisponiveis = Array.from(
     new Set(filmes.flatMap((filme) => filme.categorias ?? [])),
   ).sort((a, b) => a.localeCompare(b, "pt-BR"));
@@ -85,7 +88,7 @@ export default function Home() {
         </div>
         <Recomendacoes tipo="filme" itens={filmes} />
         <button
-          onClick={() => router.push("filmes/adicionar")}
+          onClick={() => router.push("/filmes/adicionar")}
           className="z-50 fixed bottom-8 right-8 flex items-center gap-2 bg-amber-500 hover:bg-amber-600 px-6 py-4 rounded-2xl font-semibold text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95"
         >
           <span className="text-xl">+</span>
