@@ -19,6 +19,25 @@ O Geek Hub é um aplicativo para organizar filmes, séries e livros em uma bibli
 - TMDB e Google Books para pesquisa e informações de títulos.
 - Docker Compose para executar o projeto em um contêiner.
 
+## Arquitetura e Engenharia de Software
+
+O projeto foi concebido a partir de uma **Especificação de Requisitos de Sistema (ERS v4.0)** formalizada antes e durante o desenvolvimento, cobrindo levantamento de requisitos funcionais/não funcionais, regras de negócio, modelagem UML e casos de teste.
+
+### Decisões Arquiteturais e Regras de Negócio
+* **Isolamento e Privacidade (LGPD):** Cada biblioteca pessoal é estritamente vinculada ao identificador único do usuário autenticado via Firebase Authentication, bloqueando leitura ou alteração cruzada de dados e permitindo exclusão completa da conta e registros associados.
+* **Integridade de Domínio:** Prevenção de duplicidade de obras na biblioteca individual, validação de escala quantitativa (notas restritas de `0` a `5`), limite de tamanho em resenhas (`2000` caracteres) e máquina de estados controlada para consumo (`Pendente`, `Em andamento`, `Finalizado`).
+* **Resiliência e Sincronização Offline:** Alterações de status realizadas sem conexão são persistidas localmente com marcação temporal (*timestamp*) e sincronizadas automaticamente em segundo plano com o Cloud Firestore após o restabelecimento da rede.
+* **Interoperabilidade com APIs Externas:** Integração desacoplada para resolução de metadados audiovisuais (**TMDB API**) e bibliográficos (**Google Books API**), além de motor de recomendação baseado em popularidade agregada.
+
+### Modelagem UML
+
+#### Modelo de Domínio (Diagrama de Classes)
+![Diagrama de Classes do Geek Hub](./docs/imagens/diagrama-classe.png)
+
+#### Requisitos Funcionais (Diagrama de Casos de Uso)
+![Diagrama de casos de uso](./docs/imagens/diagrama-caso-de-uso.png)
+
+
 ## Requisitos
 
 Escolha uma das formas de execução:
@@ -87,6 +106,7 @@ npm start
 
 - [`app/`](./app): páginas e rotas da aplicação.
 - [`components/`](./components): componentes visuais reutilizados pelas páginas.
+- [`docs/`](./docs): diagramas UML de arquitetura e modelagem do sistema.
 - [`lib/`](./lib): configuração do Firebase e funções compartilhadas.
 - [`public/`](./public): ícones, manifesto e outros arquivos públicos.
 - [`docker-compose.yml`](./docker-compose.yml): configuração para executar o projeto com Docker Compose.
