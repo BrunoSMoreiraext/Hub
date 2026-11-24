@@ -7,7 +7,7 @@ import { db } from "@/lib/firebase";
 import Header from "@/components/Header";
 import { Search, Plus, ChevronLeft } from "lucide-react";
 import { useRequireAuth } from "@/lib/AuthContext";
-
+import { buscarCategorias } from "@/lib/categorias";
 
 type SeriesAPI = {
   id: string;
@@ -20,6 +20,7 @@ export default function AdicionarPage() {
   const [carregando, setCarregando] = useState(false);
   const [resultados, setResultados] = useState<SeriesAPI[]>([]);
   const [erro, setErro] = useState("");
+  const [adicionando, setAdicionando] = useState(false);
   const router = useRouter();
   const { user, carregando: authCarregando } = useRequireAuth();
 
@@ -60,9 +61,13 @@ export default function AdicionarPage() {
   // Função para adicionar series ao banco de dados
 
   async function adicionarSerie(serie: SeriesAPI) {
-    if (!user) return;
+    if (!user || adicionando) return;
+    setAdicionando(true);
+    setErro("");
 
     try {
+      const categorias = await buscarCategorias("serie", serie.id);
+
       await addDoc(collection(db, "usuarios", user.uid, "series"), {
         apiId: serie.id,
         titulo: serie.titulo,
@@ -71,6 +76,7 @@ export default function AdicionarPage() {
         nota: 0,
         status: "Não iniciado",
         imagem: serie.imagem,
+        ...(categorias ? { categorias } : {}),
       });
 
       alert("Serie adicionada com sucesso!");
@@ -78,6 +84,8 @@ export default function AdicionarPage() {
     } catch (error) {
       console.error("Falha ao adicionar série:", error);
       setErro("Não foi possível adicionar a série. Tente novamente.");
+    } finally {
+      setAdicionando(false);
     }
   }
 
@@ -152,6 +160,7 @@ export default function AdicionarPage() {
               </p>
               <button
                 onClick={() => adicionarSerie(serie)}
+                disabled={adicionando}
                 className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-amber-600 text-zinc-400 hover:text-white text-xs font-semibold py-2 rounded-lg transition-all"
               >
                 <Plus size={14} />

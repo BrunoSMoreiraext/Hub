@@ -7,6 +7,7 @@ import { db } from "@/lib/firebase";
 import Header from "@/components/Header";
 import { Search, Plus, ChevronLeft } from "lucide-react";
 import { useRequireAuth } from "@/lib/AuthContext";
+import { buscarCategorias } from "@/lib/categorias";
 
 type LivroAPI = {
   id: string;
@@ -19,6 +20,7 @@ export default function AdicionarPage() {
   const [carregando, setCarregando] = useState(false);
   const [resultados, setResultados] = useState<LivroAPI[]>([]);
   const [erro, setErro] = useState("");
+  const [adicionando, setAdicionando] = useState(false);
   const router = useRouter();
   const { user, carregando: authCarregando } = useRequireAuth();
 
@@ -62,9 +64,13 @@ export default function AdicionarPage() {
   // Função para adicionar livros ao banco de dados
 
   async function adicionarLivro(livro: LivroAPI) {
-    if (!user) return;
+    if (!user || adicionando) return;
+    setAdicionando(true);
+    setErro("");
 
     try {
+      const categorias = await buscarCategorias("livro", livro.id);
+
       await addDoc(collection(db, "usuarios", user.uid, "livros"), {
         apiId: livro.id,
         titulo: livro.titulo,
@@ -73,6 +79,7 @@ export default function AdicionarPage() {
         dataInicio: "",
         nota: 0,
         status: "Não iniciado",
+        ...(categorias ? { categorias } : {}),
       });
 
       alert("Livro adicionado com sucesso!");
@@ -80,6 +87,8 @@ export default function AdicionarPage() {
     } catch (error) {
       console.error("Falha ao adicionar livro:", error);
       setErro("Não foi possível adicionar o livro. Tente novamente.");
+    } finally {
+      setAdicionando(false);
     }
   }
 
@@ -154,6 +163,7 @@ export default function AdicionarPage() {
               </p>
               <button
                 onClick={() => adicionarLivro(livro)}
+                disabled={adicionando}
                 className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-amber-600 text-zinc-400 hover:text-white text-xs font-semibold py-2 rounded-lg transition-all"
               >
                 <Plus size={14} />

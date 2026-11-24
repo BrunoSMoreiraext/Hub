@@ -21,6 +21,14 @@ export default function Header() {
 
   const inicialDoNome = user?.displayName?.charAt(0).toUpperCase() ?? "?";
 
+  const hrefBusca = pathname.startsWith("/filmes")
+    ? "/busca?tipo=filmes"
+    : pathname.startsWith("/series")
+      ? "/busca?tipo=series"
+      : pathname.startsWith("/livros")
+        ? "/busca?tipo=livros"
+        : "/busca";
+
   return (
     <header className="sticky top-0 w-full border-b border-zinc-800/50 bg-black/90 backdrop-blur-xl z-100 shadow-lg">
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
@@ -69,9 +77,13 @@ export default function Header() {
 
         {/* Lado Direito */}
         <div className="flex items-center gap-3">
-          <button className="p-2 text-zinc-400 hover:text-amber-400 hover:bg-zinc-800/50 rounded-full transition-all duration-300 hover:scale-110">
+          <Link
+            href={hrefBusca}
+            aria-label="Buscar na biblioteca"
+            className="p-2 text-zinc-400 hover:text-amber-400 hover:bg-zinc-800/50 rounded-full transition-all duration-300 hover:scale-110"
+          >
             <Search size={20} />
-          </button>
+          </Link>
 
           {/* Avatar com inicial do nome — desktop */}
           {user && (

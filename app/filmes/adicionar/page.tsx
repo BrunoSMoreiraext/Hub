@@ -7,6 +7,7 @@ import { db } from "@/lib/firebase";
 import Header from "@/components/Header";
 import { Search, Plus, ChevronLeft } from "lucide-react";
 import { useRequireAuth } from "@/lib/AuthContext";
+import { buscarCategorias } from "@/lib/categorias";
 
 type FilmesAPI = {
   id: string;
@@ -19,6 +20,7 @@ export default function AdicionarPage() {
   const [carregando, setCarregando] = useState(false);
   const [resultados, setResultados] = useState<FilmesAPI[]>([]);
   const [erro, setErro] = useState("");
+  const [adicionando, setAdicionando] = useState(false);
   const router = useRouter();
   const { user, carregando: authCarregando } = useRequireAuth();
 
@@ -55,9 +57,13 @@ export default function AdicionarPage() {
   }
 
   async function adicionarFilme(filme: FilmesAPI) {
-    if (!user) return;
+    if (!user || adicionando) return;
+    setAdicionando(true);
+    setErro("");
 
     try {
+      const categorias = await buscarCategorias("filme", filme.id);
+
       await addDoc(collection(db, "usuarios", user.uid, "filmes"), {
         apiId: filme.id,
         titulo: filme.titulo,
@@ -66,6 +72,7 @@ export default function AdicionarPage() {
         nota: 0,
         status: "Não iniciado",
         imagem: filme.imagem,
+        ...(categorias ? { categorias } : {}),
       });
 
       alert("Filme adicionado com sucesso!");
@@ -73,6 +80,8 @@ export default function AdicionarPage() {
     } catch (error) {
       console.error("Falha ao adicionar filme:", error);
       setErro("Não foi possível adicionar o filme. Tente novamente.");
+    } finally {
+      setAdicionando(false);
     }
   }
 
@@ -142,6 +151,7 @@ export default function AdicionarPage() {
               </p>
               <button
                 onClick={() => adicionarFilme(filme)}
+                disabled={adicionando}
                 className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-amber-600 text-zinc-400 hover:text-white text-xs font-semibold py-2 rounded-lg transition-all"
               >
                 <Plus size={14} />
