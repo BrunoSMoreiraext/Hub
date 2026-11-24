@@ -35,10 +35,10 @@ export default function Header() {
         {/* Lado Esquerdo: Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center font-bold text-white transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-amber-500/30 animate-glow">
-            B
+            G
           </div>
           <span className="text-xl font-bold tracking-tight text-white">
-            Bruno
+            Geek{" "}
             <span className="text-gradient animate-shimmer bg-clip-text text-transparent">
               Hub
             </span>

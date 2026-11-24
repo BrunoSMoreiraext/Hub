@@ -73,10 +73,10 @@ export default function CadastroPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 items-center justify-center font-bold text-white text-2xl mb-4">
-            B
+            G
           </div>
           <h1 className="text-3xl font-bold text-white">Criar conta</h1>
-          <p className="text-zinc-500 mt-2">Cadastre-se para acessar o Hub</p>
+          <p className="text-zinc-500 mt-2">Cadastre-se para acessar o Geek Hub</p>
         </div>
 
         {/* Formulário */}

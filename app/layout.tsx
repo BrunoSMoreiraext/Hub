@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BrunoHub",
+  title: "Geek Hub",
   description: "Minha biblioteca pessoal de livros, filmes e séries",
   manifest: "/manifest.json",
   themeColor: "#09090b",

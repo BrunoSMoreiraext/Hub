@@ -1,6 +1,6 @@
 {
-  "name": "BrunoHub",
-  "short_name": "BrunoHub",
+  "name": "Geek Hub",
+  "short_name": "Geek Hub",
   "description": "Minha biblioteca pessoal de livros, filmes e séries",
   "start_url": "/",
   "display": "standalone",
